@@ -1,4 +1,4 @@
-package com.mauriciosilva.buttonclickcounter;
+package com.mauriciosilva.calculator;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -8,37 +8,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-
-    private Button ourButton;
-    private TextView ourMessage;
-    private int numTimesClicked = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ourButton = (Button) findViewById(R.id.button);
-        ourMessage = (TextView) findViewById(R.id.textView);
-
-        View.OnClickListener ourOnClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                numTimesClicked++;
-                String result = "The button got tapped " + numTimesClicked + " time";
-                if(numTimesClicked != 1) {
-                    result += "s";
-                }
-                ourMessage.setText(result);
-            }
-        };
-
-        ourButton.setOnClickListener(ourOnClickListener);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -68,10 +44,6 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Toast toastMessage = Toast.makeText(this, "Text value is now " + ourMessage.getText(), Toast.LENGTH_LONG);
-            toastMessage.show();
-            numTimesClicked = 0;
-
             return true;
         }
 
