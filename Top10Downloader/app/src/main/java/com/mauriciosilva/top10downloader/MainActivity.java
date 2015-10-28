@@ -10,6 +10,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -20,7 +23,9 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView xmlTextView;
+    private String mFileContents;
+    private Button btnParse;
+    private ListView listApps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +33,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        xmlTextView = (TextView) findViewById(R.id.xmlTextView);
+        btnParse = (Button) findViewById(R.id.btnParse);
+        btnParse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParseApplications parseApplications = new ParseApplications(mFileContents);
+                parseApplications.process();
+                ArrayAdapter<Application> adapter = new ArrayAdapter<Application>(
+                        MainActivity.this, R.layout.list_item, parseApplications.getApplications());
+                listApps.setAdapter(adapter);
+
+            }
+        });
+        listApps = (ListView) findViewById(R.id.xmlListView);
 
         DownloadData downloadData = new DownloadData();
         downloadData.execute("http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topfreeapplications/limit=10/xml");
@@ -67,8 +84,6 @@ public class MainActivity extends AppCompatActivity {
 
     private class DownloadData extends AsyncTask<String, Void, String> {
 
-        private String mFileContents;
-
         @Override
         protected String doInBackground(String... params) {
             mFileContents = downloadXMLFile(params[0]);
@@ -82,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            xmlTextView.setText(mFileContents);
             Log.d("DownloadData", "Result was: " + result);
         }
 
