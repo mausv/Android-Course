@@ -1,10 +1,14 @@
 package com.mauriciosilva.top10downloader;
 
 import android.util.Log;
+import android.util.Xml;
 
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 
@@ -23,6 +27,55 @@ public class ParseApplications {
 
     public ArrayList<Application> getApplications() {
         return applications;
+    }
+
+    public boolean process2() {
+        boolean status = true;
+        Application currentRecord = null;
+        boolean inEntry = false;
+        String textValue = "";
+
+        try {
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+            XmlPullParser xpp = factory.newPullParser();
+            xpp.setInput(new StringReader(xmlData));
+            int eventType = xpp.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                String tagName = xpp.getName();
+                switch (eventType) {
+                    case XmlPullParser.START_TAG:
+                        if(inEntry){
+                            inEntry = true;
+                        }
+
+                        break;
+
+                    case XmlPullParser.TEXT:
+                        textValue = xpp.getText();
+                        break;
+
+                    case XmlPullParser.END_TAG:
+                        if(tagName.equalsIgnoreCase("entry")){
+                            applications.add(currentRecord);
+                            inEntry = false;
+                        } else if (tagName.equalsIgnoreCase("name")) {
+                            currentRecord.setName(textValue);
+                        } else if (tagName.equalsIgnoreCase("releaseDate")) {
+                            currentRecord.setReleaseDate(textValue);
+                        } else if (tagName.equalsIgnoreCase("artist")) {
+                            currentRecord.setArtist(textValue);
+                        }
+                        break;
+                }
+                eventType = xpp.next();
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 
     public boolean process() {

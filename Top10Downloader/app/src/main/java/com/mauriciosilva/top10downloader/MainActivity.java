@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ParseApplications parseApplications = new ParseApplications(mFileContents);
-                parseApplications.process();
+                parseApplications.process2();
                 ArrayAdapter<Application> adapter = new ArrayAdapter<Application>(
                         MainActivity.this, R.layout.list_item, parseApplications.getApplications());
                 listApps.setAdapter(adapter);
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         listApps = (ListView) findViewById(R.id.xmlListView);
+
+        System.out.println("AppInfo: " + new DownloadData2().execute("http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topfreeapplications/limit=10/xml"));
 
         DownloadData downloadData = new DownloadData();
         downloadData.execute("http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topfreeapplications/limit=10/xml");
@@ -80,6 +83,38 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private class DownloadData2 extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            StringBuilder mFileContents = new StringBuilder();
+            try {
+                URL url = new URL(params[0]);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                int response = connection.getResponseCode();
+                System.out.println("Response code was " + response);
+                InputStream is = connection.getInputStream();
+                InputStreamReader isr = new InputStreamReader(is);
+                
+                int charRead;
+                char[] inputBuffer = new char[500];
+
+                while(true) {
+                    charRead = isr.read(inputBuffer);
+                    if(charRead <= 0){
+                        break;
+                    }
+                    mFileContents.append(inputBuffer, 0, charRead);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return mFileContents.toString();
+        }
     }
 
     private class DownloadData extends AsyncTask<String, Void, String> {
