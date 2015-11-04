@@ -16,8 +16,8 @@ import com.google.android.youtube.player.YouTubePlayerView;
 public class YoutubeActivity extends YouTubeBaseActivity
     implements YouTubePlayer.OnInitializedListener
 {
-    private String GOOGLE_API_KEY = "TBA";
-    private String YOUTUBE_VIDEO_ID = "TBA";
+    private String GOOGLE_API_KEY = "AIzaSyBbQLOnwNByE9OxYnRFOaUidn1uj3dGnWY";
+    private String YOUTUBE_VIDEO_ID = "8_kPbOziQTg";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +73,8 @@ public class YoutubeActivity extends YouTubeBaseActivity
 
         @Override
         public void onSeekTo(int i) {
+
+            Toast.makeText(YoutubeActivity.this, "Seeked to " + i, Toast.LENGTH_LONG).show();
 
         }
     };
